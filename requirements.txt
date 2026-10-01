@@ -1,0 +1,10 @@
+fastapi==0.117.1
+uvicorn[standard]==0.36.0
+python-multipart==0.0.20
+pillow==11.3.0
+torch==2.8.0
+torchvision==0.23.0
+scikit-learn==1.7.2
+matplotlib==3.10.6
+seaborn==0.13.2
+

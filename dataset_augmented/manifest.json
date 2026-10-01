@@ -1,0 +1,546 @@
+{
+  "seed": 42,
+  "target_per_class": 154,
+  "source_directory": "C:\\Users\\denis\\Desktop\\uni dz\\3rd year\\comp vision\\assignment 1\\dataset\\train",
+  "output_directory": "C:\\Users\\denis\\Desktop\\uni dz\\3rd year\\comp vision\\assignment 1\\dataset_augmented\\train",
+  "classes": {
+    "bicycle": {
+      "original": 154,
+      "augmented": 0,
+      "effective_train": 154,
+      "files": []
+    },
+    "bus": {
+      "original": 124,
+      "augmented": 30,
+      "effective_train": 154,
+      "files": [
+        {
+          "source": "dataset\\train\\bus\\bus_0000.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0000_aug_0001.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0001.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0001_aug_0002.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0002.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0002_aug_0003.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0003.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0003_aug_0004.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0004.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0004_aug_0005.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0005.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0005_aug_0006.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0006.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0006_aug_0007.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0007.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0007_aug_0008.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0008.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0008_aug_0009.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0009.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0009_aug_0010.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0010.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0010_aug_0011.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0011.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0011_aug_0012.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0012.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0012_aug_0013.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0013.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0013_aug_0014.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0014.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0014_aug_0015.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0015.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0015_aug_0016.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0016.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0016_aug_0017.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0017.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0017_aug_0018.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0018.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0018_aug_0019.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0019.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0019_aug_0020.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0020.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0020_aug_0021.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0021.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0021_aug_0022.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0022.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0022_aug_0023.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0023.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0023_aug_0024.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0024.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0024_aug_0025.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0025.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0025_aug_0026.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0026.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0026_aug_0027.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0027.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0027_aug_0028.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0028.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0028_aug_0029.jpg"
+        },
+        {
+          "source": "dataset\\train\\bus\\bus_0029.jpg",
+          "output": "dataset_augmented\\train\\bus\\bus_0029_aug_0030.jpg"
+        }
+      ]
+    },
+    "car": {
+      "original": 139,
+      "augmented": 15,
+      "effective_train": 154,
+      "files": [
+        {
+          "source": "dataset\\train\\car\\car_0000.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0000_aug_0001.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0001.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0001_aug_0002.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0002.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0002_aug_0003.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0003.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0003_aug_0004.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0004.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0004_aug_0005.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0005.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0005_aug_0006.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0006.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0006_aug_0007.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0007.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0007_aug_0008.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0008.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0008_aug_0009.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0009.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0009_aug_0010.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0010.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0010_aug_0011.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0011.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0011_aug_0012.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0012.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0012_aug_0013.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0013.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0013_aug_0014.jpg"
+        },
+        {
+          "source": "dataset\\train\\car\\car_0014.jpg",
+          "output": "dataset_augmented\\train\\car\\car_0014_aug_0015.jpg"
+        }
+      ]
+    },
+    "motorcycle": {
+      "original": 106,
+      "augmented": 48,
+      "effective_train": 154,
+      "files": [
+        {
+          "source": "dataset\\train\\motorcycle\\1212.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\1212_aug_0001.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0000.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0000_aug_0002.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0001.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0001_aug_0003.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0002.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0002_aug_0004.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0003.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0003_aug_0005.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0004.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0004_aug_0006.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0005.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0005_aug_0007.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0006.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0006_aug_0008.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0007.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0007_aug_0009.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0008.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0008_aug_0010.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0009.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0009_aug_0011.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0010.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0010_aug_0012.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0011.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0011_aug_0013.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0012.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0012_aug_0014.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0013.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0013_aug_0015.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0014.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0014_aug_0016.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0015.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0015_aug_0017.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0016.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0016_aug_0018.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0017.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0017_aug_0019.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0018.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0018_aug_0020.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0019.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0019_aug_0021.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0020.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0020_aug_0022.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0021.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0021_aug_0023.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0022.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0022_aug_0024.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0023.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0023_aug_0025.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0024.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0024_aug_0026.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0025.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0025_aug_0027.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0026.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0026_aug_0028.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0027.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0027_aug_0029.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0028.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0028_aug_0030.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0029.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0029_aug_0031.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0030.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0030_aug_0032.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0031.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0031_aug_0033.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0032.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0032_aug_0034.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0033.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0033_aug_0035.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0034.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0034_aug_0036.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0035.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0035_aug_0037.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0036.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0036_aug_0038.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0037.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0037_aug_0039.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0038.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0038_aug_0040.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0039.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0039_aug_0041.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0040.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0040_aug_0042.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0041.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0041_aug_0043.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0042.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0042_aug_0044.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0043.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0043_aug_0045.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0044.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0044_aug_0046.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0045.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0045_aug_0047.jpg"
+        },
+        {
+          "source": "dataset\\train\\motorcycle\\motorcycle_0046.jpg",
+          "output": "dataset_augmented\\train\\motorcycle\\motorcycle_0046_aug_0048.jpg"
+        }
+      ]
+    },
+    "truck": {
+      "original": 121,
+      "augmented": 33,
+      "effective_train": 154,
+      "files": [
+        {
+          "source": "dataset\\train\\truck\\photo_2026-09-29_14-40-43.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-09-29_14-40-43_aug_0001.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-09-29_16-32-55.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-09-29_16-32-55_aug_0002.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-09-29_16-33-07.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-09-29_16-33-07_aug_0003.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-17.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-17_aug_0004.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-28.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-28_aug_0005.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-30.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-30_aug_0006.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-31.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-31_aug_0007.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-32.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-32_aug_0008.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-33.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-33_aug_0009.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-34.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-34_aug_0010.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-35.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-35_aug_0011.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-36.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-36_aug_0012.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-37.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-37_aug_0013.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-38.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-38_aug_0014.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-39.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-39_aug_0015.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\photo_2026-10-01_01-37-40.jpg",
+          "output": "dataset_augmented\\train\\truck\\photo_2026-10-01_01-37-40_aug_0016.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0000.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0000_aug_0017.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0001.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0001_aug_0018.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0002.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0002_aug_0019.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0003.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0003_aug_0020.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0004.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0004_aug_0021.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0005.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0005_aug_0022.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0006.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0006_aug_0023.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0007.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0007_aug_0024.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0008.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0008_aug_0025.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0009.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0009_aug_0026.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0010.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0010_aug_0027.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0011.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0011_aug_0028.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0012.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0012_aug_0029.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0013.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0013_aug_0030.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0014.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0014_aug_0031.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0015.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0015_aug_0032.jpg"
+        },
+        {
+          "source": "dataset\\train\\truck\\truck_0016.jpg",
+          "output": "dataset_augmented\\train\\truck\\truck_0016_aug_0033.jpg"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Распознавание транспорта</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="card">
+        <header>
+          <p class="eyebrow">Computer Vision</p>
+          <h1>Какой транспорт на фотографии?</h1>
+          <p class="subtitle">
+            Загрузите JPG, PNG или WebP. Нейросеть определит тип транспорта и покажет уверенность.
+          </p>
+        </header>
+
+        <form id="upload-form">
+          <label class="drop-zone" id="drop-zone" for="image-input">
+            <input id="image-input" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+            <img id="preview" alt="Предпросмотр загруженного изображения" hidden />
+            <span id="drop-copy">
+              <strong>Выберите изображение</strong>
+              <small>или перетащите его сюда · до 10 МБ</small>
+            </span>
+          </label>
+          <button id="submit-button" type="submit" disabled>Распознать транспорт</button>
+        </form>
+
+        <p id="status" class="status" aria-live="polite"></p>
+
+        <section id="result" class="result" hidden>
+          <p class="result-caption">Результат</p>
+          <div class="answer-row">
+            <h2 id="result-label"></h2>
+            <strong id="result-confidence"></strong>
+          </div>
+          <div id="probability-list" class="probability-list"></div>
+        </section>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+
