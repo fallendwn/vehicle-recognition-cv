@@ -3,23 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Распознавание транспорта</title>
+    <title>DINOv2 Распознавание транспорта</title>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
     <main class="container">
-      <section class="card">
+      <section class="card hero-card">
         <header>
-          <p class="eyebrow">Computer Vision</p>
+          <p class="eyebrow">Assignment 2 · DINOv2</p>
           <h1>Какой транспорт на фотографии?</h1>
           <p class="subtitle">
-            Загрузите JPG, PNG или WebP. Нейросеть определит тип транспорта и покажет уверенность.
+            Загрузите изображение или сделайте снимок. Модель покажет класс,
+            уверенность, задержку, карту релевантности и похожие примеры.
           </p>
         </header>
 
         <form id="upload-form">
           <label class="drop-zone" id="drop-zone" for="image-input">
-            <input id="image-input" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+            <input id="image-input" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden />
             <img id="preview" alt="Предпросмотр загруженного изображения" hidden />
             <span id="drop-copy">
               <strong>Выберите изображение</strong>
@@ -37,7 +38,25 @@
             <h2 id="result-label"></h2>
             <strong id="result-confidence"></strong>
           </div>
+          <div class="metadata-row">
+            <span><strong id="latency-value"></strong> мс</span>
+            <span id="device-value"></span>
+            <span>DINOv2 ViT-S/14</span>
+          </div>
           <div id="probability-list" class="probability-list"></div>
+
+          <div class="explanation-grid">
+            <section>
+              <h3>Карта релевантности</h3>
+              <p>Тёплые области сильнее повлияли на выбранный класс.</p>
+              <img id="heatmap" class="heatmap" alt="Карта релевантности DINOv2" />
+            </section>
+            <section>
+              <h3>Ближайшие примеры</h3>
+              <p>Похожие изображения по cosine similarity DINOv2 embeddings.</p>
+              <div id="neighbor-list" class="neighbor-list"></div>
+            </section>
+          </div>
         </section>
       </section>
     </main>

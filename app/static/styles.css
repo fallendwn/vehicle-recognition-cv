@@ -17,7 +17,7 @@ body { margin: 0; min-height: 100vh; }
 }
 
 .card {
-  width: min(680px, 100%);
+  width: min(980px, 100%);
   padding: 36px;
   background: #fff;
   border: 1px solid #dce3ea;
@@ -86,10 +86,44 @@ button:disabled { opacity: 0.48; cursor: not-allowed; }
 .bar > i { display: block; height: 100%; border-radius: inherit; background: #2f6fed; }
 .probability-value { color: #5e6a78; text-align: right; font-size: 13px; }
 
+.metadata-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -6px 0 22px;
+}
+
+.metadata-row span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: #36506f;
+  font-size: 13px;
+}
+
+.explanation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 28px;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e6ec;
+}
+
+.explanation-grid h3 { margin: 0 0 6px; font-size: 18px; }
+.explanation-grid p { min-height: 42px; margin: 0 0 14px; color: #6d7885; font-size: 13px; line-height: 1.5; }
+.heatmap { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; background: #e8edf2; }
+.neighbor-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+.neighbor { min-width: 0; margin: 0; }
+.neighbor img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 9px; background: #e8edf2; }
+.neighbor figcaption { margin-top: 6px; color: #526170; font-size: 11px; line-height: 1.35; }
+
 @media (max-width: 520px) {
   .card { padding: 24px 18px; }
   .drop-zone { min-height: 240px; }
   .drop-zone img { height: 260px; }
   .probability-row { grid-template-columns: 82px 1fr 46px; font-size: 13px; }
+  .explanation-grid { grid-template-columns: 1fr; }
+  .explanation-grid p { min-height: 0; }
 }
 

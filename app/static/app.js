@@ -9,6 +9,10 @@ const resultBox = document.querySelector("#result");
 const resultLabel = document.querySelector("#result-label");
 const resultConfidence = document.querySelector("#result-confidence");
 const probabilityList = document.querySelector("#probability-list");
+const latencyValue = document.querySelector("#latency-value");
+const deviceValue = document.querySelector("#device-value");
+const heatmap = document.querySelector("#heatmap");
+const neighborList = document.querySelector("#neighbor-list");
 
 let selectedFile = null;
 let previewUrl = null;
@@ -100,6 +104,22 @@ form.addEventListener("submit", async (event) => {
           <span class="probability-value">${Math.round(item.confidence * 100)}%</span>
         `;
         return row;
+      }),
+    );
+    latencyValue.textContent = payload.latency_ms.toFixed(1);
+    deviceValue.textContent = payload.device;
+    heatmap.src = payload.heatmap;
+    neighborList.replaceChildren(
+      ...payload.neighbors.map((item) => {
+        const figure = document.createElement("figure");
+        figure.className = "neighbor";
+        const image = document.createElement("img");
+        image.src = item.url;
+        image.alt = `Похожий пример: ${displayLabel(item.label)}`;
+        const caption = document.createElement("figcaption");
+        caption.textContent = `${displayLabel(item.label)} · ${Math.round(item.similarity * 100)}%`;
+        figure.append(image, caption);
+        return figure;
       }),
     );
     statusBox.textContent = "Готово";

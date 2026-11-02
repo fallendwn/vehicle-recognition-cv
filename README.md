@@ -1,6 +1,8 @@
-# Классификация транспорта на фотографии
+# Классификация транспорта с DINOv2
 
-Учебный проект по компьютерному зрению. Пользователь загружает изображение в браузере, а модель MobileNetV3 определяет один из пяти типов транспорта:
+Учебный проект по компьютерному зрению для Assignment 2. Пользователь загружает
+изображение или делает снимок в браузере, а DINOv2 определяет один из пяти типов
+транспорта:
 
 - `bicycle` — велосипед;
 - `bus` — автобус;
@@ -8,7 +10,11 @@
 - `motorcycle` — мотоцикл;
 - `truck` — грузовик.
 
-Модель обучается методом transfer learning: используется предобученная MobileNetV3 Small, а последний классификационный слой обучается на собственном наборе изображений из Open Images V7.
+Assignment 1 с MobileNetV3 Small сохранён как baseline. В Assignment 2 используется
+официальный DINOv2 ViT-S/14 от Meta: backbone заморожен, а на собственном наборе
+изображений из Open Images V7 обучается линейный классификатор. Приложение также
+показывает patch-relevance heatmap, ближайшие изображения в пространстве DINOv2
+embeddings и время инференса.
 
 ## Структура проекта
 
@@ -17,6 +23,7 @@ app/                      FastAPI и веб-интерфейс
 download_open_images.py   загрузка и подготовка датасета
 prepare_augmented_dataset.py  сохранение изменённых копий и балансировка train
 train.py                  обучение и оценка модели
+train_dinov2.py           DINOv2, ablation и сравнение с baseline
 dataset/                  train/val/test (создаётся автоматически)
 dataset_augmented/        отдельные изменённые копии только для train
 models/                   обученная модель
@@ -72,11 +79,31 @@ python train.py --epochs 15 --batch-size 32
 
 На компьютере с NVIDIA CUDA будет использована видеокарта, иначе обучение пройдёт на CPU. Результаты:
 
-- `models/transport_classifier.pt` — лучшая модель по validation accuracy;
+- `models/transport_classifier.pt` — baseline Assignment 1;
 - `reports/metrics.json` — accuracy, precision, recall и F1;
 - `reports/confusion_matrix.png` — матрица ошибок.
 
-## 4. Запуск сайта
+## 4. Обучение DINOv2 и ablation
+
+Первый запуск скачивает официальный DINOv2 ViT-S/14 через PyTorch Hub. Backbone
+остаётся замороженным. Скрипт извлекает embeddings один раз, обучает два линейных
+классификатора и сравнивает их на одном test split:
+
+```powershell
+python train_dinov2.py --epochs 150 --batch-size 16
+```
+
+Эксперименты:
+
+- `no_augmentation` — только исходный train split;
+- `with_augmentation` — исходный train split и сохранённые аугментированные копии.
+
+Результаты сохраняются в `reports/dinov2_metrics.json`. Скрипт также создаёт
+confusion matrix, validation curves, график сравнения с MobileNetV3, checkpoint
+линейной головы и retrieval index. Полные веса DINOv2 не копируются в репозиторий:
+их загружает официальный PyTorch Hub.
+
+## 5. Запуск сайта
 
 При желании выполните дополнительный fine-tuning последних блоков MobileNetV3:
 
@@ -84,7 +111,9 @@ python train.py --epochs 15 --batch-size 32
 python fine_tune.py --epochs 10 --batch-size 16
 ```
 
-Результат сохраняется в `models/transport_classifier_finetuned.pt`. Сайт автоматически использует fine-tuned checkpoint, если он существует.
+Результат сохраняется в `models/transport_classifier_finetuned.pt` и используется
+только как baseline для сравнения. Веб-приложение Assignment 2 использует
+`models/dinov2_transport_classifier.pt`.
 
 ```powershell
 uvicorn app.main:app --reload
@@ -106,6 +135,12 @@ Invoke-RestMethod http://127.0.0.1:8000/api/health
 {
   "label": "bus",
   "confidence": 0.9321,
+  "latency_ms": 142.7,
+  "device": "CPU",
+  "heatmap": "data:image/jpeg;base64,...",
+  "neighbors": [
+    {"index": 31, "label": "bus", "similarity": 0.91, "url": "/api/reference/31"}
+  ],
   "probabilities": [
     {"label": "bus", "confidence": 0.9321},
     {"label": "truck", "confidence": 0.0412}
@@ -115,5 +150,20 @@ Invoke-RestMethod http://127.0.0.1:8000/api/health
 
 ## Источник данных
 
-Open Images V7: <https://storage.googleapis.com/openimages/web/index.html>. Аннотации распространяются по CC BY 4.0; изображения указаны как CC BY 2.0. Для учебного отчёта укажите источник датасета и MobileNetV3 из `torchvision`.
+Open Images V7: <https://storage.googleapis.com/openimages/web/index.html>.
+Аннотации распространяются по CC BY 4.0; изображения указаны как CC BY 2.0.
+
+DINOv2:
+
+- Oquab et al., *DINOv2: Learning Robust Visual Features without Supervision*, 2023/2024: <https://arxiv.org/abs/2304.07193>;
+- официальная реализация и model card: <https://github.com/facebookresearch/dinov2>.
+
+## Воспроизводимость
+
+- random seed: `42`;
+- одинаковые validation и test splits для MobileNetV3 и DINOv2;
+- test split не используется при выборе checkpoint;
+- synthetic media не используется;
+- сохранённые аугментации добавляются только в train split;
+- параметры, история обучения, class-wise metrics и latency сохраняются в JSON.
 

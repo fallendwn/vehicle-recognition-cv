@@ -1,0 +1,16 @@
+{
+  "baseline_accuracy": 0.8235294117647058,
+  "dinov2_accuracy": 0.9159663865546218,
+  "accuracy_gain_points": 9.243697478991598,
+  "baseline_macro_f1": 0.8214683426788619,
+  "dinov2_macro_f1": 0.9157870141294188,
+  "macro_f1_gain_points": 9.431867145055683,
+  "latency": {
+    "device": "CPU",
+    "samples": 30,
+    "mean_ms": 63.15,
+    "median_ms": 62.58,
+    "p95_ms": 69.05
+  },
+  "selected_experiment": "with_augmentation"
+}
