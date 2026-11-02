@@ -16,10 +16,9 @@ from docx.shared import Cm, Inches, Pt, RGBColor
 ROOT = Path(__file__).resolve().parent
 REPORTS = ROOT / "reports"
 OUTPUT = REPORTS / "assignment2_dinov2_report.docx"
-BLUE = "203864"
-LIGHT_BLUE = "EAF0F8"
-LIGHT_GRAY = "F4F5F7"
-BORDER = "D9D9D9"
+BLACK = "000000"
+LIGHT_GRAY = "EEEEEE"
+BORDER = "B7B7B7"
 
 
 def set_cell_shading(cell, fill: str) -> None:
@@ -70,13 +69,13 @@ def add_table(doc: Document, headers: list[str], rows: list[list[str]], widths: 
     for index, header in enumerate(headers):
         cell = table.rows[0].cells[index]
         cell.text = header
-        set_cell_shading(cell, BLUE)
+        set_cell_shading(cell, BLACK)
         cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
         set_cell_margins(cell)
         paragraph = cell.paragraphs[0]
         paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
         for run in paragraph.runs:
-            run.font.bold = True
+            run.font.bold = False
             run.font.color.rgb = RGBColor(255, 255, 255)
             run.font.size = Pt(9)
     for row_index, row_data in enumerate(rows):
@@ -87,13 +86,14 @@ def add_table(doc: Document, headers: list[str], rows: list[list[str]], widths: 
             cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
             set_cell_margins(cell)
             if row_index % 2:
-                set_cell_shading(cell, LIGHT_BLUE)
+                set_cell_shading(cell, LIGHT_GRAY)
             paragraph = cell.paragraphs[0]
             paragraph.alignment = (
                 WD_ALIGN_PARAGRAPH.LEFT if column == 0 else WD_ALIGN_PARAGRAPH.CENTER
             )
             for run in paragraph.runs:
                 run.font.size = Pt(8.6)
+                run.font.color.rgb = RGBColor(0, 0, 0)
     if widths:
         for row in table.rows:
             for index, width in enumerate(widths):
@@ -155,7 +155,7 @@ def build_pipeline_diagram(path: Path) -> None:
     ]
     for index, (x, width, label) in enumerate(items):
         box = (x, 105, x + width, 285)
-        draw.rounded_rectangle(box, radius=12, fill="#EAF0F8", outline="#203864", width=4)
+        draw.rounded_rectangle(box, radius=12, fill="#EEEEEE", outline="#000000", width=4)
         bbox = draw.multiline_textbbox((0, 0), label, font=font, spacing=8, align="center")
         text_width = bbox[2] - bbox[0]
         text_height = bbox[3] - bbox[1]
@@ -170,10 +170,10 @@ def build_pipeline_diagram(path: Path) -> None:
         if index < len(items) - 1:
             start_x = x + width + 18
             end_x = items[index + 1][0] - 18
-            draw.line((start_x, 195, end_x, 195), fill="#203864", width=4)
+            draw.line((start_x, 195, end_x, 195), fill="#000000", width=4)
             draw.polygon(
                 [(end_x, 195), (end_x - 18, 184), (end_x - 18, 206)],
-                fill="#203864",
+                fill="#000000",
             )
     draw.text((460, 325), "pretrained weights remain fixed", font=small_font, fill="#555555")
     draw.text((1260, 325), "trained on the project dataset", font=small_font, fill="#555555")
@@ -204,6 +204,9 @@ def configure_styles(doc: Document) -> None:
         title_properties.remove(title_border)
     styles["List Bullet"].font.name = "Aptos"
     styles["List Bullet"].font.size = Pt(9.3)
+    styles["List Bullet"].font.color.rgb = RGBColor(0, 0, 0)
+    if "Strong" in styles:
+        styles["Strong"].font.color.rgb = RGBColor(0, 0, 0)
 
 
 def page_break(doc: Document) -> None:

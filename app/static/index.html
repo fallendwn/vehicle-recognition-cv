@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DINOv2 Распознавание транспорта</title>
+    <title>DINOv2 Transport Classification</title>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
@@ -11,35 +11,35 @@
       <section class="card hero-card">
         <header>
           <p class="eyebrow">Assignment 2 · DINOv2</p>
-          <h1>Какой транспорт на фотографии?</h1>
+          <h1>What type of vehicle is in the image?</h1>
           <p class="subtitle">
-            Загрузите изображение или сделайте снимок. Модель покажет класс,
-            уверенность, задержку, карту релевантности и похожие примеры.
+            Upload an image or take a photo. The model will show the predicted
+            class, confidence, latency, relevance map, and similar examples.
           </p>
         </header>
 
         <form id="upload-form">
           <label class="drop-zone" id="drop-zone" for="image-input">
             <input id="image-input" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden />
-            <img id="preview" alt="Предпросмотр загруженного изображения" hidden />
+            <img id="preview" alt="Preview of the selected image" hidden />
             <span id="drop-copy">
-              <strong>Выберите изображение</strong>
-              <small>или перетащите его сюда · до 10 МБ</small>
+              <strong>Select an image</strong>
+              <small>or drag it here · up to 10 MB</small>
             </span>
           </label>
-          <button id="submit-button" type="submit" disabled>Распознать транспорт</button>
+          <button id="submit-button" type="submit" disabled>Classify vehicle</button>
         </form>
 
         <p id="status" class="status" aria-live="polite"></p>
 
         <section id="result" class="result" hidden>
-          <p class="result-caption">Результат</p>
+          <p class="result-caption">Prediction</p>
           <div class="answer-row">
             <h2 id="result-label"></h2>
             <strong id="result-confidence"></strong>
           </div>
           <div class="metadata-row">
-            <span><strong id="latency-value"></strong> мс</span>
+            <span><strong id="latency-value"></strong> ms</span>
             <span id="device-value"></span>
             <span>DINOv2 ViT-S/14</span>
           </div>
@@ -47,13 +47,13 @@
 
           <div class="explanation-grid">
             <section>
-              <h3>Карта релевантности</h3>
-              <p>Тёплые области сильнее повлияли на выбранный класс.</p>
-              <img id="heatmap" class="heatmap" alt="Карта релевантности DINOv2" />
+              <h3>Patch relevance map</h3>
+              <p>Warmer regions contributed more strongly to the predicted class.</p>
+              <img id="heatmap" class="heatmap" alt="DINOv2 patch relevance map" />
             </section>
             <section>
-              <h3>Ближайшие примеры</h3>
-              <p>Похожие изображения по cosine similarity DINOv2 embeddings.</p>
+              <h3>Nearest examples</h3>
+              <p>Training images with the highest cosine similarity in DINOv2 embedding space.</p>
               <div id="neighbor-list" class="neighbor-list"></div>
             </section>
           </div>

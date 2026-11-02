@@ -61,25 +61,25 @@ async def predict(file: UploadFile = File(...)) -> dict[str, object]:
     if classifier is None:
         raise HTTPException(
             status_code=503,
-            detail="Модель ещё не обучена. Сначала запустите train_dinov2.py.",
+            detail="The model is not ready. Run train_dinov2.py first.",
         )
     if file.content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(
             status_code=415,
-            detail="Поддерживаются только JPG, PNG и WebP.",
+            detail="Only JPG, PNG, and WebP files are supported.",
         )
 
     raw_image = await file.read(MAX_UPLOAD_BYTES + 1)
     await file.close()
     if len(raw_image) > MAX_UPLOAD_BYTES:
-        raise HTTPException(status_code=413, detail="Размер файла не должен превышать 10 МБ.")
+        raise HTTPException(status_code=413, detail="The file must not exceed 10 MB.")
 
     try:
         image = Image.open(io.BytesIO(raw_image))
         image.verify()
         image = Image.open(io.BytesIO(raw_image)).convert("RGB")
     except (UnidentifiedImageError, OSError):
-        raise HTTPException(status_code=400, detail="Не удалось прочитать изображение.")
+        raise HTTPException(status_code=400, detail="The image could not be read.")
 
     result = classifier.predict(image)
     return {

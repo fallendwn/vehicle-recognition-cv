@@ -18,11 +18,11 @@ let selectedFile = null;
 let previewUrl = null;
 
 const labels = {
-  bicycle: "велосипед",
-  bus: "автобус",
-  car: "автомобиль",
-  motorcycle: "мотоцикл",
-  truck: "грузовик",
+  bicycle: "Bicycle",
+  bus: "Bus",
+  car: "Car",
+  motorcycle: "Motorcycle",
+  truck: "Truck",
 };
 
 function displayLabel(label) {
@@ -31,11 +31,11 @@ function displayLabel(label) {
 
 function selectFile(file) {
   if (!file || !["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-    showError("Выберите изображение в формате JPG, PNG или WebP.");
+    showError("Select an image in JPG, PNG, or WebP format.");
     return;
   }
   if (file.size > 10 * 1024 * 1024) {
-    showError("Файл слишком большой. Максимальный размер — 10 МБ.");
+    showError("The file is too large. The maximum size is 10 MB.");
     return;
   }
 
@@ -79,8 +79,8 @@ form.addEventListener("submit", async (event) => {
   if (!selectedFile) return;
 
   submitButton.disabled = true;
-  submitButton.textContent = "Анализируем…";
-  statusBox.textContent = "Нейросеть обрабатывает изображение";
+  submitButton.textContent = "Analyzing…";
+  statusBox.textContent = "The model is processing the image";
   statusBox.classList.remove("error");
   resultBox.hidden = true;
 
@@ -90,7 +90,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const response = await fetch("/api/predict", { method: "POST", body });
     const payload = await response.json();
-    if (!response.ok) throw new Error(payload.detail || "Не удалось выполнить распознавание.");
+    if (!response.ok) throw new Error(payload.detail || "The image could not be classified.");
 
     resultLabel.textContent = displayLabel(payload.label);
     resultConfidence.textContent = `${Math.round(payload.confidence * 100)}%`;
@@ -115,20 +115,20 @@ form.addEventListener("submit", async (event) => {
         figure.className = "neighbor";
         const image = document.createElement("img");
         image.src = item.url;
-        image.alt = `Похожий пример: ${displayLabel(item.label)}`;
+        image.alt = `Similar example: ${displayLabel(item.label)}`;
         const caption = document.createElement("figcaption");
         caption.textContent = `${displayLabel(item.label)} · ${Math.round(item.similarity * 100)}%`;
         figure.append(image, caption);
         return figure;
       }),
     );
-    statusBox.textContent = "Готово";
+    statusBox.textContent = "Complete";
     resultBox.hidden = false;
   } catch (error) {
     showError(error.message);
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Распознать транспорт";
+    submitButton.textContent = "Classify vehicle";
   }
 });
 
