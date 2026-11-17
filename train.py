@@ -11,24 +11,50 @@ import seaborn as sns
 import torch
 from sklearn.metrics import classification_report, confusion_matrix
 from torch import nn
-from torch.utils.data import ConcatDataset, DataLoader, Dataset
-from torchvision import datasets, models, transforms
+from torch.utils.data import DataLoader, Subset
+from torchvision import datasets, transforms
 
-from app.inference import IMAGE_SIZE, NORMALIZE_MEAN, NORMALIZE_STD
+from app.inference import NORMALIZE_MEAN, NORMALIZE_STD, build_model
 
 
+FASHION_MNIST_CLASSES = [
+    "T-shirt/top", 
+    "Trouser", 
+    "Pullover", 
+    "Dress", 
+    "Coat",
+    "Sandal", 
+    "Shirt", 
+    "Sneaker", 
+    "Bag", 
+    "Ankle boot",
+]
+
+#Changed the path from data/
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Train a transport image classifier.")
-    parser.add_argument("--data", type=Path, default=Path("dataset"))
-    parser.add_argument(
-        "--augmented-data", type=Path, default=Path("dataset_augmented")
-    )
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data", type=Path, default=Path("data"))
     parser.add_argument("--epochs", type=int, default=15)
-    parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
+    parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument(
+        "--samples-per-class",
+        type=int,
+        default=1_000,
+        help="Total train+validation samples selected for each class.",
+    )
+    parser.add_argument(
+        "--validation-per-class",
+        type=int,
+        default=200,
+        help="Validation samples per class; the rest are used for training.",
+    )
     parser.add_argument("--patience", type=int, default=4)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--output", type=Path, default=Path("models/transport_classifier.pt"))
+    parser.add_argument(
+        "--output", type=Path, default=Path("models/fashion_mnist_cnn.pt")
+    )
     return parser.parse_args()
 
 
@@ -40,71 +66,51 @@ def seed_everything(seed: int) -> None:
         torch.cuda.manual_seed_all(seed)
 
 
+def make_transform() -> transforms.Compose:
+    """Convert images to tensors and apply FashionMNIST normalization."""
+    return transforms.Compose(
+        [
+            transforms.ToTensor(),
+            transforms.Normalize(NORMALIZE_MEAN, NORMALIZE_STD),
+        ]
+    )
+
+
 def make_loaders(
     data_dir: Path,
     batch_size: int,
-    augmented_data_dir: Path | None = Path("dataset_augmented"),
+    samples_per_class: int = 1_000,
+    validation_per_class: int = 200,
+    seed: int = 42,
 ) -> tuple[dict[str, DataLoader], list[str]]:
-    missing_splits = [
-        split for split in ("train", "val", "test") if not (data_dir / split).is_dir()
-    ]
-    if missing_splits:
-        missing = ", ".join(str(data_dir / split) for split in missing_splits)
-        raise SystemExit(
-            "Dataset is not ready. Missing folders: "
-            f"{missing}.\nRun this first:\n"
-            "  python download_open_images.py --images-per-class 150"
+    if not 1 <= validation_per_class < samples_per_class <= 6_000:
+        raise ValueError(
+            "Expected 1 <= validation_per_class < samples_per_class <= 6000"
         )
 
-    train_transform = transforms.Compose(
-        [
-            transforms.RandomResizedCrop(IMAGE_SIZE, scale=(0.72, 1.0)),
-            transforms.RandomHorizontalFlip(),
-            transforms.RandomRotation(8),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.15),
-            transforms.ToTensor(),
-            transforms.Normalize(NORMALIZE_MEAN, NORMALIZE_STD),
-        ]
+    transform = make_transform()
+    full_train = datasets.FashionMNIST(
+        data_dir, train=True, download=True, transform=transform
     )
-    evaluation_transform = transforms.Compose(
-        [
-            transforms.Resize(256),
-            transforms.CenterCrop(IMAGE_SIZE),
-            transforms.ToTensor(),
-            transforms.Normalize(NORMALIZE_MEAN, NORMALIZE_STD),
-        ]
+    test_dataset = datasets.FashionMNIST(
+        data_dir, train=False, download=True, transform=transform
     )
 
-    datasets_by_split: dict[str, Dataset] = {
-        "train": datasets.ImageFolder(data_dir / "train", train_transform),
-        "val": datasets.ImageFolder(data_dir / "val", evaluation_transform),
-        "test": datasets.ImageFolder(data_dir / "test", evaluation_transform),
+    generator = torch.Generator().manual_seed(seed)
+    training_indices: list[int] = []
+    validation_indices: list[int] = []
+    targets = full_train.targets
+    for class_index in range(len(FASHION_MNIST_CLASSES)):
+        class_indices = torch.where(targets == class_index)[0]
+        order = torch.randperm(len(class_indices), generator=generator)
+        selected = class_indices[order[:samples_per_class]].tolist()
+        validation_indices.extend(selected[:validation_per_class])
+        training_indices.extend(selected[validation_per_class:])
+    datasets_by_split = {
+        "train": Subset(full_train, training_indices),
+        "val": Subset(full_train, validation_indices),
+        "test": test_dataset,
     }
-    class_names = datasets_by_split["train"].classes
-    for split in ("val", "test"):
-        dataset = datasets_by_split[split]
-        if dataset.classes != class_names:
-            raise ValueError(f"Class folders in {split} do not match the train split")
-
-    if augmented_data_dir is not None:
-        augmented_train_dir = augmented_data_dir / "train"
-        if augmented_train_dir.is_dir():
-            augmented_dataset = datasets.ImageFolder(
-                augmented_train_dir, train_transform, allow_empty=True
-            )
-            if augmented_dataset.classes != class_names:
-                raise ValueError(
-                    "Class folders in the augmented train directory do not match "
-                    "the source train split"
-                )
-            if len(augmented_dataset):
-                datasets_by_split["train"] = ConcatDataset(
-                    [datasets_by_split["train"], augmented_dataset]
-                )
-                print(
-                    f"Using {len(augmented_dataset)} saved augmented images from "
-                    f"{augmented_train_dir}"
-                )
 
     loaders = {
         split: DataLoader(
@@ -116,7 +122,7 @@ def make_loaders(
         )
         for split, dataset in datasets_by_split.items()
     }
-    return loaders, class_names
+    return loaders, FASHION_MNIST_CLASSES.copy()
 
 
 def run_epoch(
@@ -151,9 +157,7 @@ def run_epoch(
 
 @torch.inference_mode()
 def evaluate_test(
-    model: nn.Module,
-    loader: DataLoader,
-    device: torch.device,
+    model: nn.Module, loader: DataLoader, device: torch.device
 ) -> tuple[list[int], list[int]]:
     model.eval()
     targets: list[int] = []
@@ -170,23 +174,32 @@ def main() -> None:
     seed_everything(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     loaders, class_names = make_loaders(
-        args.data, args.batch_size, args.augmented_data
+        args.data,
+        args.batch_size,
+        args.samples_per_class,
+        args.validation_per_class,
+        args.seed,
     )
 
-    model = models.mobilenet_v3_small(weights=models.MobileNet_V3_Small_Weights.DEFAULT)
-    for parameter in model.features.parameters():
-        parameter.requires_grad = False
-    model.classifier[-1] = nn.Linear(model.classifier[-1].in_features, len(class_names))
-    model.to(device)
-
+    model = build_model(len(class_names)).to(device)
     criterion = nn.CrossEntropyLoss(label_smoothing=0.05)
-    optimizer = torch.optim.AdamW(model.classifier.parameters(), lr=args.learning_rate)
+    optimizer = torch.optim.AdamW(
+        model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay
+    )
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode="max", factor=0.5, patience=1
+    )
     history: list[dict[str, float | int]] = []
     best_validation_accuracy = -1.0
     epochs_without_improvement = 0
     args.output.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"Training on {device}; classes: {', '.join(class_names)}")
+    print(
+        f"Training FashionMNIST CNN on {device}: "
+        f"{len(loaders['train'].dataset)} train, "
+        f"{len(loaders['val'].dataset)} validation, "
+        f"{len(loaders['test'].dataset)} test"
+    )
     for epoch in range(1, args.epochs + 1):
         train_loss, train_accuracy = run_epoch(
             model, loaders["train"], criterion, device, optimizer
@@ -194,6 +207,7 @@ def main() -> None:
         validation_loss, validation_accuracy = run_epoch(
             model, loaders["val"], criterion, device
         )
+        scheduler.step(validation_accuracy)
         history.append(
             {
                 "epoch": epoch,
@@ -201,6 +215,7 @@ def main() -> None:
                 "train_accuracy": train_accuracy,
                 "validation_loss": validation_loss,
                 "validation_accuracy": validation_accuracy,
+                "learning_rate": optimizer.param_groups[0]["lr"],
             }
         )
         print(
@@ -213,10 +228,12 @@ def main() -> None:
             epochs_without_improvement = 0
             torch.save(
                 {
-                    "architecture": "mobilenet_v3_small",
+                    "architecture": "fashion_mnist_cnn",
                     "class_names": class_names,
                     "model_state_dict": model.state_dict(),
                     "validation_accuracy": validation_accuracy,
+                    "normalization_mean": NORMALIZE_MEAN,
+                    "normalization_std": NORMALIZE_STD,
                 },
                 args.output,
             )
@@ -232,6 +249,7 @@ def main() -> None:
     report = classification_report(
         targets,
         predictions,
+        labels=list(range(len(class_names))),
         target_names=class_names,
         output_dict=True,
         zero_division=0,
@@ -239,21 +257,29 @@ def main() -> None:
 
     reports_dir = Path("reports")
     reports_dir.mkdir(exist_ok=True)
-    (reports_dir / "metrics.json").write_text(
+    (reports_dir / "fashion_mnist_metrics.json").write_text(
         json.dumps({"history": history, "test": report}, indent=2), encoding="utf-8"
     )
 
     matrix = confusion_matrix(targets, predictions)
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(matrix, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(
+        matrix,
+        annot=True,
+        fmt="d",
+        cmap="Blues",
+        xticklabels=class_names,
+        yticklabels=class_names,
+    )
     plt.xlabel("Predicted class")
     plt.ylabel("True class")
+    plt.xticks(rotation=35, ha="right")
     plt.tight_layout()
-    plt.savefig(reports_dir / "confusion_matrix.png", dpi=160)
+    plt.savefig(reports_dir / "fashion_mnist_confusion_matrix.png", dpi=160)
+    plt.close()
     print(f"Test accuracy: {report['accuracy']:.3f}")
     print(f"Model saved to: {args.output.resolve()}")
 
 
 if __name__ == "__main__":
     main()
-

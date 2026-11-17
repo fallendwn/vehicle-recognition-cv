@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Распознавание транспорта</title>
+    <title>Классификация одежды FashionMNIST</title>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
@@ -11,9 +11,9 @@
       <section class="card">
         <header>
           <p class="eyebrow">Computer Vision</p>
-          <h1>Какой транспорт на фотографии?</h1>
+          <h1>Что это за предмет одежды?</h1>
           <p class="subtitle">
-            Загрузите JPG, PNG или WebP. Нейросеть определит тип транспорта и покажет уверенность.
+            Загрузите изображение предмета на простом фоне. Модель FashionMNIST определит класс и покажет уверенность.
           </p>
         </header>
 
@@ -26,7 +26,7 @@
               <small>или перетащите его сюда · до 10 МБ</small>
             </span>
           </label>
-          <button id="submit-button" type="submit" disabled>Распознать транспорт</button>
+          <button id="submit-button" type="submit" disabled>Распознать одежду</button>
         </form>
 
         <p id="status" class="status" aria-live="polite"></p>

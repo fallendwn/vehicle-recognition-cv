@@ -1,2 +1,2 @@
-"""Transport image classifier web application."""
+"""FashionMNIST clothing classifier web application."""
 

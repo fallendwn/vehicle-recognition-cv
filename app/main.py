@@ -9,21 +9,19 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 
-from app.inference import TransportClassifier
+from app.inference import FashionClassifier
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 STATIC_DIR = PROJECT_ROOT / "app" / "static"
-BASE_MODEL_PATH = PROJECT_ROOT / "models" / "transport_classifier.pt"
-FINETUNED_MODEL_PATH = PROJECT_ROOT / "models" / "transport_classifier_finetuned.pt"
-DEFAULT_MODEL_PATH = FINETUNED_MODEL_PATH if FINETUNED_MODEL_PATH.exists() else BASE_MODEL_PATH
+DEFAULT_MODEL_PATH = PROJECT_ROOT / "models" / "fashion_mnist_cnn.pt"
 MAX_UPLOAD_BYTES = 10 * 1024 * 1024
 ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
 
-app = FastAPI(title="Transport Classifier", version="1.0.0")
+app = FastAPI(title="FashionMNIST Classifier", version="2.0.0")
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-classifier: TransportClassifier | None = None
+classifier: FashionClassifier | None = None
 model_error: str | None = None
 
 
@@ -32,7 +30,7 @@ def load_model() -> None:
     global classifier, model_error
     model_path = Path(os.getenv("MODEL_PATH", str(DEFAULT_MODEL_PATH)))
     try:
-        classifier = TransportClassifier(model_path)
+        classifier = FashionClassifier(model_path)
         model_error = None
     except (FileNotFoundError, RuntimeError, KeyError, ValueError) as error:
         classifier = None
@@ -75,7 +73,7 @@ async def predict(file: UploadFile = File(...)) -> dict[str, object]:
     try:
         image = Image.open(io.BytesIO(raw_image))
         image.verify()
-        image = Image.open(io.BytesIO(raw_image)).convert("RGB")
+        image = Image.open(io.BytesIO(raw_image)).convert("L")
     except (UnidentifiedImageError, OSError):
         raise HTTPException(status_code=400, detail="Не удалось прочитать изображение.")
 

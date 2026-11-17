@@ -4,14 +4,14 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import torch
-from PIL import Image
+from PIL import Image, ImageOps, ImageStat
 from torch import nn
-from torchvision import models, transforms
+from torchvision import transforms
 
 
-IMAGE_SIZE = 224
-NORMALIZE_MEAN = [0.485, 0.456, 0.406]
-NORMALIZE_STD = [0.229, 0.224, 0.225]
+IMAGE_SIZE = 28
+NORMALIZE_MEAN = (0.2860,)
+NORMALIZE_STD = (0.3530,)
 
 
 @dataclass(frozen=True)
@@ -21,17 +21,56 @@ class Prediction:
     probabilities: list[dict[str, float | str]]
 
 
-def build_model(number_of_classes: int, architecture: str = "mobilenet_v3_small") -> nn.Module:
-    """Build the same network architecture for training and inference."""
-    if architecture != "mobilenet_v3_small":
+class FashionMNISTCNN(nn.Module):
+    """Compact CNN for normalized 28x28 grayscale FashionMNIST images."""
+
+    def __init__(self, number_of_classes: int = 10) -> None:
+        super().__init__()
+        self.features = nn.Sequential(
+            nn.Conv2d(1, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2),
+            nn.Dropout2d(0.15),
+            nn.Conv2d(32, 64, kernel_size=3, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(64, 64, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(2),
+            nn.Dropout2d(0.20),
+        )
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(64 * 7 * 7, 128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.35),
+            nn.Linear(128, number_of_classes),
+        )
+
+    def forward(self, images: torch.Tensor) -> torch.Tensor:
+        return self.classifier(self.features(images))
+
+
+def build_model(
+    number_of_classes: int, architecture: str = "fashion_mnist_cnn"
+) -> nn.Module:
+    if architecture != "fashion_mnist_cnn":
         raise ValueError(f"Unsupported architecture: {architecture}")
-
-    model = models.mobilenet_v3_small(weights=None)
-    model.classifier[-1] = nn.Linear(model.classifier[-1].in_features, number_of_classes)
-    return model
+    return FashionMNISTCNN(number_of_classes)
 
 
-class TransportClassifier:
+def prepare_uploaded_image(image: Image.Image) -> Image.Image:
+    """Make a user image resemble FashionMNIST: bright object on a dark square."""
+    image = ImageOps.autocontrast(image.convert("L"))
+    if ImageStat.Stat(image).mean[0] > 127:
+        image = ImageOps.invert(image)
+    return ImageOps.fit(image, (IMAGE_SIZE, IMAGE_SIZE), method=Image.Resampling.LANCZOS)
+
+
+class FashionClassifier:
     def __init__(self, checkpoint_path: Path) -> None:
         if not checkpoint_path.exists():
             raise FileNotFoundError(
@@ -41,15 +80,13 @@ class TransportClassifier:
 
         checkpoint = torch.load(checkpoint_path, map_location="cpu", weights_only=True)
         self.class_names: list[str] = checkpoint["class_names"]
-        architecture = checkpoint.get("architecture", "mobilenet_v3_small")
+        architecture = checkpoint.get("architecture", "fashion_mnist_cnn")
         self.model = build_model(len(self.class_names), architecture)
         self.model.load_state_dict(checkpoint["model_state_dict"])
         self.model.eval()
-
         self.transform = transforms.Compose(
             [
-                transforms.Resize(256),
-                transforms.CenterCrop(IMAGE_SIZE),
+                transforms.Lambda(prepare_uploaded_image),
                 transforms.ToTensor(),
                 transforms.Normalize(NORMALIZE_MEAN, NORMALIZE_STD),
             ]
@@ -57,11 +94,9 @@ class TransportClassifier:
 
     @torch.inference_mode()
     def predict(self, image: Image.Image) -> Prediction:
-        tensor = self.transform(image.convert("RGB")).unsqueeze(0)
-        logits = self.model(tensor)[0]
+        logits = self.model(self.transform(image).unsqueeze(0))[0]
         probabilities = torch.softmax(logits, dim=0)
         ordered_indices = probabilities.argsort(descending=True)
-
         ranked = [
             {
                 "label": self.class_names[index],
@@ -75,4 +110,3 @@ class TransportClassifier:
             confidence=float(best["confidence"]),
             probabilities=ranked,
         )
-

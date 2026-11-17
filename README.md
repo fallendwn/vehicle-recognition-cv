@@ -1,31 +1,40 @@
-# Классификация транспорта на фотографии
+# Классификация одежды FashionMNIST
 
-Учебный проект по компьютерному зрению. Пользователь загружает изображение в браузере, а модель MobileNetV3 определяет один из пяти типов транспорта:
+Учебный проект по компьютерному зрению. Свёрточная нейронная сеть классифицирует
+чёрно-белые изображения FashionMNIST по 10 классам:
 
-- `bicycle` — велосипед;
-- `bus` — автобус;
-- `car` — автомобиль;
-- `motorcycle` — мотоцикл;
-- `truck` — грузовик.
+`T-shirt/top`, `Trouser`, `Pullover`, `Dress`, `Coat`, `Sandal`, `Shirt`,
+`Sneaker`, `Bag`, `Ankle boot`.
 
-Модель обучается методом transfer learning: используется предобученная MobileNetV3 Small, а последний классификационный слой обучается на собственном наборе изображений из Open Images V7.
+В проекте **нет data augmentation**. Для train, validation и test используется
+одинаковая предобработка:
 
-## Структура проекта
-
-```text
-app/                      FastAPI и веб-интерфейс
-download_open_images.py   загрузка и подготовка датасета
-prepare_augmented_dataset.py  сохранение изменённых копий и балансировка train
-train.py                  обучение и оценка модели
-dataset/                  train/val/test (создаётся автоматически)
-dataset_augmented/        отдельные изменённые копии только для train
-models/                   обученная модель
-reports/                  метрики и confusion matrix
+```python
+transforms.ToTensor()
+transforms.Normalize((0.2860,), (0.3530,))
 ```
 
-## 1. Установка
+Это стандартные приближённые mean и standard deviation обучающей выборки
+FashionMNIST. Из исходного training split воспроизводимо выбираются ровно 10 000
+изображений — по 1 000 каждого класса. Они стратифицированно делятся на 8 000
+train (по 800 на класс) и 2 000 validation (по 200 на класс). Официальные 10 000
+test-изображений не участвуют в выборе модели и также содержат по 1 000 примеров
+каждого класса.
 
-Рекомендуется Python 3.11 или 3.12. В PowerShell:
+## Структура
+
+```text
+train.py              загрузка FashionMNIST, обучение и оценка CNN
+app/inference.py      архитектура модели и инференс
+app/main.py           FastAPI API и веб-интерфейс
+data/                 FashionMNIST (скачивается автоматически)
+models/               лучший checkpoint
+reports/              метрики и confusion matrix
+```
+
+## Установка
+
+Рекомендуется Python 3.11 или 3.12:
 
 ```powershell
 py -3.11 -m venv .venv
@@ -34,86 +43,47 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## 2. Подготовка датасета
-
-FiftyOne нужен только для скачивания Open Images:
+## Обучение
 
 ```powershell
-pip install -r requirements-data.txt
-python download_open_images.py --images-per-class 200
+python train.py --epochs 15 --batch-size 128
 ```
 
-Скрипт скачивает изображения с разметкой, выбирает крупнейший объект нужного класса, вырезает его по bounding box и создаёт разбиение 70/15/15:
+При первом запуске `torchvision` автоматически скачает FashionMNIST в `data/`.
+На NVIDIA CUDA будет использована видеокарта, иначе обучение пройдёт на CPU.
 
-```text
-dataset/
-├── train/{car,bus,truck,motorcycle,bicycle}
-├── val/{car,bus,truck,motorcycle,bicycle}
-└── test/{car,bus,truck,motorcycle,bicycle}
-```
+Результаты:
 
-После скачивания рекомендуется вручную просмотреть изображения и удалить неверно размеченные примеры. Не переносите один и тот же файл между train и test.
+- `models/fashion_mnist_cnn.pt` — модель с лучшей validation accuracy;
+- `reports/fashion_mnist_metrics.json` — история обучения и test-метрики;
+- `reports/fashion_mnist_confusion_matrix.png` — матрица ошибок.
 
-Перед обучением можно выровнять число обучающих примеров. Скрипт не меняет исходные фотографии и не добавляет изменённые копии в `val` или `test`. Он создаёт отражённые, повёрнутые, обрезанные и скорректированные по цвету копии в отдельной папке:
+Дополнительные параметры:
 
 ```powershell
-python prepare_augmented_dataset.py
+python train.py --help
 ```
 
-По умолчанию каждый класс дополняется до размера самого крупного класса. Параметры запуска и происхождение каждой копии записываются в `dataset_augmented/manifest.json`.
+Размер сбалансированной подвыборки можно изменить параметрами
+`--samples-per-class` и `--validation-per-class`.
 
-## 3. Обучение
+## Веб-приложение
 
-```powershell
-python train.py --epochs 15 --batch-size 32
-```
-
-Если существует `dataset_augmented/train`, сохранённые копии автоматически добавляются только к обучающей выборке. Их можно отключить параметром `--augmented-data` с путём к несуществующему каталогу.
-
-На компьютере с NVIDIA CUDA будет использована видеокарта, иначе обучение пройдёт на CPU. Результаты:
-
-- `models/transport_classifier.pt` — лучшая модель по validation accuracy;
-- `reports/metrics.json` — accuracy, precision, recall и F1;
-- `reports/confusion_matrix.png` — матрица ошибок.
-
-## 4. Запуск сайта
-
-При желании выполните дополнительный fine-tuning последних блоков MobileNetV3:
-
-```powershell
-python fine_tune.py --epochs 10 --batch-size 16
-```
-
-Результат сохраняется в `models/transport_classifier_finetuned.pt`. Сайт автоматически использует fine-tuned checkpoint, если он существует.
+После обучения:
 
 ```powershell
 uvicorn app.main:app --reload
 ```
 
-Откройте <http://127.0.0.1:8000>. Документация API доступна на <http://127.0.0.1:8000/docs>.
+Откройте <http://127.0.0.1:8000>. Загружаемое изображение переводится в оттенки
+серого, приводится к размеру 28×28 и нормализуется так же, как FashionMNIST.
+Лучше всего подходят изображения одного предмета одежды на простом контрастном
+фоне.
 
-Проверка состояния модели:
+`POST /api/predict` возвращает лучший класс и вероятности всех 10 классов.
+`GET /api/health` показывает, загружена ли модель.
 
-```powershell
-Invoke-RestMethod http://127.0.0.1:8000/api/health
-```
+## Датасет
 
-## API
-
-`POST /api/predict` принимает поле `file` формата JPG, PNG или WebP размером до 10 МБ:
-
-```json
-{
-  "label": "bus",
-  "confidence": 0.9321,
-  "probabilities": [
-    {"label": "bus", "confidence": 0.9321},
-    {"label": "truck", "confidence": 0.0412}
-  ]
-}
-```
-
-## Источник данных
-
-Open Images V7: <https://storage.googleapis.com/openimages/web/index.html>. Аннотации распространяются по CC BY 4.0; изображения указаны как CC BY 2.0. Для учебного отчёта укажите источник датасета и MobileNetV3 из `torchvision`.
-
+FashionMNIST доступен напрямую через `torchvision.datasets.FashionMNIST` и
+содержит 60 000 обучающих и 10 000 тестовых изображений размером 28×28.

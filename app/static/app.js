@@ -14,11 +14,16 @@ let selectedFile = null;
 let previewUrl = null;
 
 const labels = {
-  bicycle: "велосипед",
-  bus: "автобус",
-  car: "автомобиль",
-  motorcycle: "мотоцикл",
-  truck: "грузовик",
+  "t-shirt/top": "футболка / топ",
+  trouser: "брюки",
+  pullover: "пуловер",
+  dress: "платье",
+  coat: "пальто",
+  sandal: "сандалия",
+  shirt: "рубашка",
+  sneaker: "кроссовок",
+  bag: "сумка",
+  "ankle boot": "ботинок",
 };
 
 function displayLabel(label) {
@@ -108,7 +113,7 @@ form.addEventListener("submit", async (event) => {
     showError(error.message);
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent = "Распознать транспорт";
+    submitButton.textContent = "Распознать одежду";
   }
 });
 
