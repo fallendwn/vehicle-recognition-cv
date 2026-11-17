@@ -1,10 +1,3 @@
-"""Part D: эксперимент с тремя learning rate одной CNN.
-
-Запуск из папки проекта: python part_d.py
-Быстрая проверка: python part_d.py --epochs 1
-Результаты: reports/part_d/. Нужны зависимости из requirements.txt.
-"""
-
 import argparse
 import copy
 import csv
@@ -29,7 +22,7 @@ def experiment(epochs):
     print("Device:", device)
 
     for lr in [0.0001, 0.001, 0.01]:
-        # Меняем только learning rate. Данные и начальные веса одинаковые.
+
         seed_everything(42)
         loaders, classes = make_loaders(Path("data"), batch_size=128)
         model = build_model(len(classes)).to(device)
@@ -39,7 +32,7 @@ def experiment(epochs):
         best_epoch = 0
         best_weights = None
 
-        # Без scheduler и early stopping: одинаковое число эпох, постоянный LR.
+
         for epoch in range(1, epochs + 1):
             train_loss, train_accuracy = run_epoch(
                 model, loaders["train"], loss_function, device, optimizer
@@ -53,7 +46,7 @@ def experiment(epochs):
                 best_epoch = epoch
                 best_weights = copy.deepcopy(model.state_dict())
 
-        # Выбираем веса по validation, а test используем только для оценки.
+
         model.load_state_dict(best_weights)
         _, test_accuracy = run_epoch(model, loaders["test"], loss_function, device)
         results.append([lr, best_epoch, best_accuracy * 100, test_accuracy * 100])
@@ -74,7 +67,7 @@ def experiment(epochs):
     for row in rows:
         print(" | ".join(str(value) for value in row))
 
-    # Два простых графика: сравниваем validation на каждой эпохе.
+
     for column, label, filename in [
         (5, "Validation accuracy (%)", "accuracy.png"),
         (3, "Validation loss", "loss.png"),
@@ -93,33 +86,14 @@ def experiment(epochs):
         fig.savefig(output / filename, dpi=150)
         plt.close(fig)
 
-    # Победитель определяется по validation, а не по test.
-    best = max(results, key=lambda row: row[2])
-    explanation = f"""Part D: learning rate experiment
-Device: {device}. Epochs per configuration: {epochs}. Seed: 42.
-Train / validation / test: 8000 / 2000 / 10000 images.
-Same CNN, initial weights, split, normalization, batch size and optimizer.
-Only learning rate changes. No scheduler or early stopping.
-Best LR by validation accuracy: {best[0]} ({best[2]:.2f}%).
-One run per setting; this does not prove the result holds for every random seed.
 
-Как объяснить преподавателю:
-Мы сравнили три learning rate: 0.0001, 0.001 и 0.01.
-Learning rate определяет размер шага при обновлении весов.
-Маленький шаг может обучаться медленно. Большой может мешать сходимости.
-Это возможные причины, а фактическое поведение видно на наших графиках.
-Accuracy — процент правильных ответов: выше лучше.
-Loss — ошибка обучения: ниже лучше, это не процент неправильных ответов.
-Лучшую эпоху и настройку выбираем по validation. Test — итоговая оценка.
-В таблице сравниваем результаты при одинаковом числе эпох.
-Если различие небольшое, для уверенного вывода нужны повторные запуски.
-"""
-    (output / "explanation.txt").write_text(explanation, encoding="utf-8")
+    best = max(results, key=lambda row: row[2])
+    print(f"Best LR: {best[0]}, validation accuracy: {best[2]:.2f}%")
     print(f"Saved to {output}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=15)
     args = parser.parse_args()
     if args.epochs < 1:

@@ -1,13 +1,3 @@
-"""Простые графики и таблицы для защиты FashionMNIST.
-
-Запуск после обучения: python yeah_plots.py
-Другой файл метрик: python yeah_plots.py --metrics path/to/metrics.json
-Результаты: reports/yeah_plots/ (PNG, CSV и пояснения explanation.txt).
-
-Файл независимый: не меняет обучение, модель и исходные отчёты.
-Использует только matplotlib и стандартную библиотеку Python.
-"""
-
 import argparse
 import csv
 import json
@@ -15,7 +5,7 @@ from pathlib import Path
 
 import matplotlib
 
-matplotlib.use("Agg")  # Работает и без открытого графического окна.
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 
@@ -30,7 +20,6 @@ def save_plot(fig, output, name):
 
 
 def save_table(output, name, headers, rows):
-    """CSV удобно открыть в Excel, PNG — вставить в презентацию."""
     with (output / f"{name}.csv").open("w", newline="", encoding="utf-8-sig") as file:
         writer = csv.writer(file)
         writer.writerow(headers)
@@ -51,7 +40,7 @@ def save_table(output, name, headers, rows):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--metrics", type=Path,
                         default=ROOT / "reports/fashion_mnist_metrics.json")
     parser.add_argument("--output", type=Path, default=ROOT / "reports/yeah_plots")
@@ -75,8 +64,7 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     epochs = [row["epoch"] for row in history]
 
-    # 1. Accuracy: доля правильных ответов. Чем выше, тем лучше.
-    # 2. Loss: ошибка, которую минимизирует обучение. Чем ниже, тем лучше.
+
     for metric, title, ylabel, scale in [
         ("accuracy", "Точность по эпохам", "Правильные ответы, %", 100),
         ("loss", "Ошибка по эпохам", "Loss", 1),
@@ -95,7 +83,7 @@ def main():
         ax.legend()
         save_plot(fig, output, metric)
 
-    # Recall: из всех настоящих изображений класса сколько распознано верно.
+
     recalls = [report[name]["recall"] * 100 for name in classes]
     fig, ax = plt.subplots(figsize=(9, 6))
     bars = ax.barh(classes, recalls, color="#3978af")
@@ -105,7 +93,7 @@ def main():
            title="Распознавание каждого класса на test", xticks=[0, 20, 40, 60, 80, 100])
     save_plot(fig, output, "class_recall")
 
-    # train.py выбирает checkpoint по максимальной validation accuracy.
+
     best = max(history, key=lambda row: row["validation_accuracy"])
     total = sum(int(report[name]["support"]) for name in classes)
     save_table(output, "summary", ["Показатель", "Значение"], [
@@ -119,29 +107,8 @@ def main():
         for name in classes
     ])
 
-    explanation = f"""Источник: {args.metrics.resolve()}
-
-Как объяснить преподавателю:
-1. accuracy.png: по горизонтали эпохи — проходы по обучающим данным.
-   По вертикали процент правильных ответов. Выше — лучше.
-   Train — данные для обучения. Validation — данные для выбора модели.
-2. loss.png: величина ошибки, которую модель уменьшает при обучении.
-   Ниже — лучше. Это не процент неправильных ответов.
-   Рост validation loss при падении train loss может указывать на переобучение.
-3. class_recall.png: для каждого настоящего класса показана доля верных ответов.
-   Например, recall 90% означает: из 100 вещей этого класса верно распознаны 90.
-   Это поясняющий пример, а не результат нашего эксперимента.
-4. summary.png / summary.csv: лучшая эпоха, validation accuracy и test accuracy.
-   Test — отдельные данные для итоговой оценки выбранной модели.
-   Итоговая test accuracy — доля верных ответов среди всех test-изображений.
-5. class_results.png / class_results.csv: число test-примеров и recall по классам.
-
-Все числа взяты из указанного JSON. Нового обучения и оценки здесь нет.
-Матрица ошибок не восстанавливается из сводных метрик: её сохраняет train.py.
-"""
-    (output / "explanation.txt").write_text(explanation, encoding="utf-8")
     print(f"Готово: {output.resolve()}")
-    print("3 графика, 2 таблицы (PNG + CSV), explanation.txt с пояснениями.")
+    print("3 графика, 2 таблицы (PNG + CSV).")
 
 
 if __name__ == "__main__":

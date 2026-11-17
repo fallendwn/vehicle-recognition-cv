@@ -1,13 +1,3 @@
-"""Part E: сравнение CNN и простой полносвязной сети.
-
-Запуск из папки проекта: python part_e.py
-Быстрая проверка: python part_e.py --epochs 1
-Нужны зависимости из requirements.txt.
-
-Обе модели обучаются заново на одинаковых данных, одинаковое число эпох.
-Это отдельный эксперимент: готовые checkpoint проекта не меняются.
-"""
-
 import argparse
 import copy
 import csv
@@ -27,14 +17,14 @@ def compare(epochs):
     print("Device:", device)
 
     for name in ["CNN", "Fully connected"]:
-        # Один seed и один split для обеих моделей: 8000 / 2000 / 10000.
+
         seed_everything(42)
         loaders, classes = make_loaders(Path("data"), batch_size=128)
 
         if name == "CNN":
             model = build_model(len(classes))
         else:
-            # 28x28 пикселей -> 784 числа -> 128 нейронов -> 10 классов.
+
             model = nn.Sequential(
                 nn.Flatten(),
                 nn.Linear(784, 128),
@@ -49,7 +39,7 @@ def compare(epochs):
         best_accuracy = -1
         best_weights = None
 
-        # Сбрасываем seed перед началом обучения.
+
         seed_everything(42)
         if device.type == "cuda":
             torch.cuda.synchronize()
@@ -67,7 +57,7 @@ def compare(epochs):
             torch.cuda.synchronize()
         seconds = time.perf_counter() - start
 
-        # Test используется только после выбора лучших весов по validation.
+
         model.load_state_dict(best_weights)
         _, test_accuracy = run_epoch(model, loaders["test"], loss_function, device)
         results.append([name, parameters, round(test_accuracy * 100, 2), round(seconds, 2)])
@@ -85,31 +75,11 @@ def compare(epochs):
         writer.writerow(headers)
         writer.writerows(results)
 
-    notes = f"""Part E: CNN vs fully connected network
-Device: {device}. Epochs per model: {epochs}. Seed: 42.
-Train: 8000, validation: 2000, test: 10000 images.
-Same normalization, split, batch size, optimizer and learning rate.
-Best weights selected by validation accuracy; test used only for final evaluation.
-Time includes training, validation and copying best weights.
-It excludes data loading before training and final test evaluation.
-One run per model: timing and accuracy may vary between runs.
-
-Как объяснить:
-Parameters — сколько обучаемых чисел в модели.
-Test accuracy — процент правильных ответов на тестовых изображениях.
-Time — сколько секунд заняло обучение вместе с проверкой validation.
-CNN ищет локальные признаки (например, края) одинаковыми фильтрами по изображению.
-Полносвязная сеть превращает изображение в список пикселей и не использует
-структуру соседних пикселей явно. Поэтому CNN часто лучше подходит для изображений.
-Но какая модель лучше в нашем запуске — смотрим в comparison.csv.
-Это сравнение двух конкретных моделей, а не доказательство, что CNN всегда лучше.
-"""
-    (output / "explanation.txt").write_text(notes, encoding="utf-8")
     print(f"\nSaved to {output}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=15)
     args = parser.parse_args()
     if args.epochs < 1:
