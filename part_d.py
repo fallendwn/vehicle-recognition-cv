@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch import nn
 
-from app.inference import build_model
+from train import build_model
 from train import make_loaders, run_epoch, seed_everything
 
 
