@@ -14,7 +14,7 @@ from torch import nn
 from torch.utils.data import DataLoader, Subset
 from torchvision import datasets, transforms
 
-from app.inference import NORMALIZE_MEAN, NORMALIZE_STD, build_model
+from model import NORMALIZE_MEAN, NORMALIZE_STD, build_model
 
 
 FASHION_MNIST_CLASSES = [
@@ -30,7 +30,7 @@ FASHION_MNIST_CLASSES = [
     "Ankle boot",
 ]
 
-#Changed the path from data/
+#Changed the path from data/transport_classifier to data, changed batch size to 128 (because too much photos (10k))
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, default=Path("data"))
@@ -39,16 +39,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument(
+        #train + validation
         "--samples-per-class",
         type=int,
         default=1_000,
-        help="Total train+validation samples selected for each class.",
     )
     parser.add_argument(
+        #validation per class
         "--validation-per-class",
         type=int,
         default=200,
-        help="Validation samples per class; the rest are used for training.",
+
     )
     parser.add_argument("--patience", type=int, default=4)
     parser.add_argument("--seed", type=int, default=42)
@@ -57,7 +58,7 @@ def parse_args() -> argparse.Namespace:
     )
     return parser.parse_args()
 
-
+#seed for randomness (it was before actually)
 def seed_everything(seed: int) -> None:
     random.seed(seed)
     np.random.seed(seed)
@@ -67,7 +68,7 @@ def seed_everything(seed: int) -> None:
 
 
 def make_transform() -> transforms.Compose:
-    """Convert images to tensors and apply FashionMNIST normalization."""
+    #convert img to tensors apply normalization
     return transforms.Compose(
         [
             transforms.ToTensor(),
@@ -85,9 +86,9 @@ def make_loaders(
 ) -> tuple[dict[str, DataLoader], list[str]]:
     if not 1 <= validation_per_class < samples_per_class <= 6_000:
         raise ValueError(
-            "Expected 1 <= validation_per_class < samples_per_class <= 6000"
+            "1<=x<=6000"
         )
-
+    #changed dataset import from local to datasets.fashionmnist
     transform = make_transform()
     full_train = datasets.FashionMNIST(
         data_dir, train=True, download=True, transform=transform
@@ -100,6 +101,8 @@ def make_loaders(
     training_indices: list[int] = []
     validation_indices: list[int] = []
     targets = full_train.targets
+    #deleted data augmentation process here, because THERE ARE enough photos + they are grayscaled
+    #it goes through images if class of image = class takes it in list. then generates a list of that images.
     for class_index in range(len(FASHION_MNIST_CLASSES)):
         class_indices = torch.where(targets == class_index)[0]
         order = torch.randperm(len(class_indices), generator=generator)
@@ -141,12 +144,12 @@ def run_epoch(
     for images, labels in loader:
         images, labels = images.to(device), labels.to(device)
         if optimizer:
-            optimizer.zero_grad(set_to_none=True)
+            optimizer.zero_grad(set_to_none=True) #clear
         with torch.set_grad_enabled(is_training):
-            logits = model(images)
-            loss = criterion(logits, labels)
+            logits = model(images) #calculate
+            loss = criterion(logits, labels) #calculate loss
             if optimizer:
-                loss.backward()
+                loss.backward() #backward propagation
                 optimizer.step()
         total_loss += loss.item() * labels.size(0)
         total_correct += (logits.argmax(dim=1) == labels).sum().item()

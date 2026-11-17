@@ -173,8 +173,7 @@ def main() -> None:
     add_body(
         document,
         "This project classifies a photograph as bicycle, bus, car, motorcycle or truck. "
-        "A MobileNetV3 Small network provides the classifier, and a FastAPI web page accepts "
-        "an uploaded image and returns the predicted class with confidence scores.",
+        "A MobileNetV3 Small network provides the classifier.",
     )
     add_body(
         document,
@@ -340,14 +339,7 @@ def main() -> None:
     )
 
     add_page_break(document)
-    add_heading(document, "6 Web application and limitations")
-    add_body(
-        document,
-        "The web application loads transport_classifier_finetuned.pt when it starts. The health route "
-        "confirmed that all five classes loaded. A prediction request with a held out bus image returned "
-        "bus with confidence 0.9972. Uploaded JPG, PNG and WebP files are converted to RGB, resized, "
-        "centre cropped to 224 pixels and normalized before inference.",
-    )
+    add_heading(document, "6 Model limitations")
     add_body(
         document,
         "The classifier always chooses one of the five known classes. It has no unknown class and no "

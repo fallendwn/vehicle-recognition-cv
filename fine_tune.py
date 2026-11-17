@@ -9,7 +9,7 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from app.inference import build_model
+from model import build_model
 from train import make_loaders, run_epoch, seed_everything
 
 
